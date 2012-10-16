@@ -1,0 +1,23 @@
+{
+	"name": "pegasus",
+	"description": "Pegasus HTTP Middleware",
+	"keywords": [
+		"framework",
+		"middleware",
+		"pegasus"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/nqdeng/pegasus.git"
+	},
+	"author": "Nanqiao Deng <nqdeng@gmail.com>",
+	"version": "0.5.0",
+	"engines": {
+		"node": "0.8.x"
+	},
+	"dependencies": {
+	    "cookie": "0.0.x",
+	    "iconv-lite": "0.2.x"
+  	},
+	"main": "lib/main.js"
+}
