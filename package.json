@@ -11,9 +11,9 @@
 		"url": "git://github.com/nqdeng/pegasus.git"
 	},
 	"author": "Nanqiao Deng <nqdeng@gmail.com>",
-	"version": "0.6.2",
+	"version": "0.7.0",
 	"engines": {
-		"node": ">=0.8.0"
+		"node": ">=0.10.0"
 	},
 	"dependencies": {
 	    "cookie": "0.0.x",
