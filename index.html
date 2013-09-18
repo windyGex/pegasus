@@ -1,0 +1,1304 @@
+<!doctype HTML>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>天马HTTP中间件使用手册</title>
+<style>
+body {
+font-family: Tahoma;
+font-size: 10pt;
+line-height: 170%;
+padding: 0 10pt;
+}
+
+nav {
+background: gray;
+color: white;
+overflow-x: hidden;
+overflow-y: auto;
+position: fixed;
+top: 0;
+left: 0;
+bottom: 0;
+width: 240px;
+}
+
+header {
+padding-left: 240px;
+}
+
+header h1 {
+color: #17365d;
+font-size: 18pt;
+font-weight: normal;
+margin: 0;
+padding: 0.5em 0;
+text-align: right;
+}
+
+article {
+padding-left: 240px;
+}
+
+article h2 {
+border-bottom: dotted 1px #777;
+color: #4f81bd;
+font-size: 11pt;
+margin: 1em 0;
+padding: 0 0 0.3em 0;
+}
+
+article h3 {
+color: #000;
+font-size: 11pt;
+margin: 1em 0;
+padding: 0;
+}
+
+article h4 {
+color: #000;
+font-size: 10pt;
+margin: 1em 0;
+padding: 0;
+}
+
+article p {
+margin: 1em 0;
+}
+
+article p code {
+border: 1px solid #ccc;
+color: #d14;
+}
+
+article p strong {
+color: #f00;
+}
+
+article pre {
+background: #eee;
+border-left: solid 2px #3c0;
+color: #000;
+margin: 1em 0;
+padding: 0 0 0 2em;
+}
+
+article blockquote {
+background: #fff;
+border: dashed 1px #777;
+border-left: solid 2px #777;
+color: #000;
+margin: 0;
+padding: 0 0 0 2em;
+}
+
+nav ul {
+margin: 10px;
+padding: 0;
+}
+
+nav a {
+color: white;
+text-decoration: none;
+}
+
+nav a:hover {
+text-decoration: underline;
+}
+
+nav li {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+nav .level2 {
+font-size: 11pt;
+font-weight: bold;
+}
+
+nav .level3 {
+padding-left: 1em;
+}
+
+nav .level3:before { 
+content: "» ";
+}
+
+nav .level4 {
+padding-left: 2em;
+}
+
+nav .level4:before { 
+content: "› ";
+}
+
+footer {
+padding-left: 240px;
+}
+</style>
+</head>
+<body>
+<header>
+<h1>天马HTTP中间件使用手册</h1>
+
+</header>
+<nav>
+<ul>
+<li class="level2"><a href="#1">入门</a></li><li class="level3"><a href="#1.1">安装</a></li><li class="level3"><a href="#1.2">使用</a></li><li class="level3"><a href="#1.3">curl</a></li><li class="level2"><a href="#2">路由器</a></li><li class="level3"><a href="#2.1">创建路由器（router）</a></li><li class="level3"><a href="#2.2">路由规则（rule）</a></li><li class="level3"><a href="#2.3">配置项（options）</a></li><li class="level2"><a href="#3">流水线与模块</a></li><li class="level3"><a href="#3.1">创建流水线</a></li><li class="level3"><a href="#3.2">编写模块</a></li><li class="level3"><a href="#3.3">上下文对象（context）</a></li><li class="level4"><a href="#3.3.1">context.base</a></li><li class="level4"><a href="#3.3.2">context.charset</a></li><li class="level4"><a href="#3.3.3">模块间数据传递</a></li><li class="level3"><a href="#3.4">编写复杂模块</a></li><li class="level4"><a href="#3.4.1">发生了什么？！</a></li><li class="level2"><a href="#4">请求与响应</a></li><li class="level3"><a href="#4.1">客户端请求</a></li><li class="level4"><a href="#4.1.1">请求地址（href）</a></li><li class="level4"><a href="#4.1.2">请求方法（method）</a></li><li class="level4"><a href="#4.1.3">请求头（headers）</a></li><li class="level4"><a href="#4.1.4">请求数据（body）</a></li><li class="level4"><a href="#4.1.5">请求来源（ip）</a></li><li class="level4"><a href="#4.1.6">cookie</a></li><li class="level4"><a href="#4.1.7">查询字符串（query string）</a></li><li class="level4"><a href="#4.1.8">表单请求（form post）</a></li><li class="level4"><a href="#4.1.9">JSON请求</a></li><li class="level3"><a href="#4.2">客户端响应</a></li><li class="level4"><a href="#4.2.1">状态码（status）</a></li><li class="level4"><a href="#4.2.2">响应头（headers）</a></li><li class="level4"><a href="#4.2.3">cookie</a></li><li class="level4"><a href="#4.2.4">响应数据（body）</a></li><li class="level4"><a href="#4.2.5">发送响应</a></li><li class="level3"><a href="#4.3">服务端请求</a></li><li class="level4"><a href="#4.3.1">http(s):</a></li><li class="level4"><a href="#4.3.2">file:</a></li><li class="level4"><a href="#4.3.3">loop:</a></li><li class="level3"><a href="#4.4">服务端响应</a></li><li class="level4"><a href="#4.4.1">状态码（status）</a></li><li class="level4"><a href="#4.4.2">响应头（headers）</a></li><li class="level4"><a href="#4.4.3">响应数据（body）</a></li><li class="level2"><a href="#5">存储</a></li><li class="level3"><a href="#5.1">session</a></li><li class="level4"><a href="#5.1.1">启用session</a></li><li class="level4"><a href="#5.1.2">session有效期</a></li><li class="level3"><a href="#5.2">application</a></li><li class="level3"><a href="#5.3">storage</a></li><li class="level4"><a href="#5.3.1">打开数据库</a></li><li class="level4"><a href="#5.3.2">插入数据（insert）</a></li><li class="level4"><a href="#5.3.3">读取数据（select）</a></li><li class="level4"><a href="#5.3.4">筛选条件（filter）</a></li><li class="level4"><a href="#5.3.5">更新数据（update）</a></li><li class="level4"><a href="#5.3.6">删除数据（remove）</a></li><li class="level2"><a href="#6">工具集</a></li><li class="level3"><a href="#6.1">util.throwError</a></li><li class="level3"><a href="#6.2">util.format</a></li><li class="level3"><a href="#6.3">util.log</a></li><li class="level3"><a href="#6.4">util.error</a></li><li class="level3"><a href="#6.5">util.isArray</a></li><li class="level3"><a href="#6.6">util.isBoolean</a></li><li class="level3"><a href="#6.7">util.isCheckedError</a></li><li class="level3"><a href="#6.8">util.isDate</a></li><li class="level3"><a href="#6.9">util.isError</a></li><li class="level3"><a href="#6.10">util.isFunction</a></li><li class="level3"><a href="#6.11">util.isNull</a></li><li class="level3"><a href="#6.12">util.isNumber</a></li><li class="level3"><a href="#6.13">util.isObject</a></li><li class="level3"><a href="#6.14">util.isRegExp</a></li><li class="level3"><a href="#6.15">util.isString</a></li><li class="level3"><a href="#6.16">util.isUndefined</a></li><li class="level3"><a href="#6.17">util.type</a></li><li class="level3"><a href="#6.18">util.inherit</a></li><li class="level3"><a href="#6.19">util.mix</a></li><li class="level3"><a href="#6.20">util.merge</a></li><li class="level3"><a href="#6.21">util.each</a></li><li class="level3"><a href="#6.22">util.keys</a></li><li class="level3"><a href="#6.23">util.values</a></li><li class="level3"><a href="#6.24">util.append</a></li><li class="level3"><a href="#6.25">util.toArray</a></li><li class="level3"><a href="#6.26">util.unique</a></li><li class="level3"><a href="#6.27">util.wildcard</a></li><li class="level3"><a href="#6.28">util.tmpl</a></li><li class="level3"><a href="#6.29">util.encode</a></li><li class="level3"><a href="#6.30">util.decode</a></li><li class="level3"><a href="#6.31">util.mime</a></li><li class="level3"><a href="#6.32">util.request</a></li></ul>
+
+</nav>
+<article>
+<h2 id="1">入门</h2>
+<p>天马HTTP中间件（以下简称中间件）提供了搭建HTTP服务所必须的功能，包括了基于路由器和流水线的HTTP处理模型，以及各种基础功能。</p>
+<h3 id="1.1">安装</h3>
+<blockquote>
+<p>   npm install pegasus</p>
+</blockquote>
+<h3 id="1.2">使用</h3>
+<p>中间件需要用一些NodeJS代码包装一下，才能搭建HTTP服务器，并在上边配置路由规则和挂载流水线。下例中的<code>createServer</code>函数实现了这个功能。后续的例子中会用到这个函数。</p>
+<pre><code>var http = require(&#39;http&#39;),
+    pegasus = require(&#39;pegasus&#39;);
+
+function createServer(port) {
+    var router = pegasus.createRouter();
+
+    http.createServer(function (request, response) {
+        var data = [];
+
+        request.on(&#39;data&#39;, function (chunk) {
+            data.push(chunk);
+        });
+
+        request.on(&#39;end&#39;, function () {
+            request.body = Buffer.concat(data);
+            router.route(request, response);
+        });
+    }).listen(port);
+
+    return router;
+}</code></pre>
+<blockquote>
+<p>   注意： 为了正确处理带有数据的POST请求，需要将请求数据赋值给<code>request.body</code>属性后，再将NodeJS原生的<code>request</code>和<code>response</code>对象传递给路由器。</p>
+</blockquote>
+<h3 id="1.3">curl</h3>
+<p>curl是一个常见的命令行工具，可以查看HTTP请求的响应结果。例如在终端下输入以下命令。</p>
+<pre><code>curl http://www.google.com/
+    &gt;&gt; &lt;HTML&gt;&lt;HEAD&gt;&lt;meta ...</code></pre>
+<p>可以看到服务器返回了一个HTML页面。后续的例子中会用到该工具来演示示例代码的运行结果。</p>
+
+<h2 id="2">路由器</h2>
+<p>路由器根据路由规则，使用相应的流水线来处理HTTP请求，并在完成之后将HTTP响应返回给客户端。</p>
+<h3 id="2.1">创建路由器（router）</h3>
+<p>首先按照以下方式创建路由器。</p>
+<pre><code>var router = require(&#39;pegasus&#39;).createRouter({ charset: &#39;utf-8&#39; });</code></pre>
+<p>配置项<code>charset</code>指定了按何种编码处理HTTP请求和响应，默认值为<code>utf-8</code>，支持的编码类型请参考<a href="https://github.com/ashtuchkin/iconv-lite">iconv-lite</a>。</p>
+<h3 id="2.2">路由规则（rule）</h3>
+<p>在路由器上挂载流水线时需要按以下方式指定路由规则。</p>
+<pre><code>router
+    .mount(&#39;*.example.com&#39;, []) // 流水线一
+    .mount(&#39;/css/&#39;, []) // 流水线二
+    .mount(&#39;/&#39;, []); // 流水线三</code></pre>
+<p>路由规则通过第一个参数指定，由域名（hostname）和路径（pathname）组成，域名支持通配符（<em>和?）。可以同时配置域名和路径，也可以省略其中之一（默认域名为</em>，默认路径为/）。例如以下规则都是合法的。</p>
+<pre><code>*.alibaba.com
+localhost/js/</code></pre>
+<p>与路由规则匹配的HTTP请求就会由相应的流水线处理。接着上例，有以下路由结果。</p>
+<pre><code>http://style.example.com/js/ae.js  =&gt; 流水线一
+http://localhost/css/4v/common.css =&gt; 流水线二
+http://localhost/js/ae.js          =&gt; 流水线三</code></pre>
+<h3 id="2.3">配置项（options）</h3>
+<p>在路由器上挂载流水线时可按照以下方式指定额外的配置型。</p>
+<pre><code>router
+    .mount(&#39;/&#39;, { session: 30 }, []);</code></pre>
+<p>上例中配置项<code>session</code>指定了为该流水线启用session，有效期为30秒。</p>
+
+<h2 id="3">流水线与模块</h2>
+<p>流水线由若干个模块连接而成，每个模块依次完成HTTP处理工作。</p>
+<h3 id="3.1">创建流水线</h3>
+<p>可按照以下方式创建一个流水线。</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.response
+                .write(&#39;Hello&#39;);
+            next();
+        },
+        function (context, next) {
+            context.response
+                .write(&#39;World&#39;);
+            next();
+        }
+    ]);
+
+-----------------------
+curl http://localhost/
+  &gt;&gt; HelloWorld</code></pre>
+<p>可以看到，流水线是一个数组，其中的每个函数被称为模块。每个函数依次执行，在完成HTTP处理工作后，需要调用<code>next()</code>将工作移交给下一个函数。</p>
+<h3 id="3.2">编写模块</h3>
+<p>模块是一个普通的函数，一般按照以下方式编写：</p>
+<pre><code>function (context, next) {
+    // HTTP处理工作相关代码。
+    context.response
+        .write(&#39;Hello&#39;);
+    // 完成处理并移交工作。
+    next();
+}</code></pre>
+<p>如果处理工作中有一些异步操作，就需要在回调函数中调用<code>next()</code>，示例如下：</p>
+<pre><code>function (context, next) {
+    // HTTP处理工作相关代码。
+    fs.readFile(&#39;hello.txt&#39;, function (err, data) {
+        context.response
+            .write(data);
+        // 完成处理并移交工作。
+        next();
+    });
+}</code></pre>
+<h3 id="3.3">上下文对象（context）</h3>
+<p>流水线处理每个HTTP请求时，会生成一个对应的上下文对象，其中默认包含以下属性：</p>
+<pre><code>context.base:string
+context.charset:string
+context.request:Function
+context.response:Object
+context.application:Object
+context.storage:Function</code></pre>
+<p>如果启用了session，上下文对象中还包含以下属性：</p>
+<pre><code>context.session:Object</code></pre>
+<p>下边先介绍<code>context.base</code>和<code>context.charset</code>，其它属性在后续教程中详细介绍。</p>
+<h4 id="3.3.1">context.base</h4>
+<p>获取当前流水线的基础路径。该路径与流水线的路由规则对应，因此有以下例子。</p>
+<pre><code>    路由规则                            基础路径
+-----------------------------------------------
+www.example.com                     /
+/foo/                               /foo/</code></pre>
+<p>通过该属性，模块可以判断HTTP请求路径中哪些部分是需要忽略的。</p>
+<h4 id="3.3.2">context.charset</h4>
+<p>获取当前路由器使用的编码。<code>request</code>和<code>response</code>对象使用该属性处理HTTP请求和响应，而模块也可以通过该属性来决定以怎样的编码处理数据。</p>
+<h4 id="3.3.3">模块间数据传递</h4>
+<p>上下文对象在模块之间传递，因此可以通过在上下文对象上添加属性的方式在模块之间传递数据。以下是一个例子。</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.foo = &#39;foo&#39;;
+            next();
+        },
+        function (context, next) {
+            context.response
+                .write(context.foo);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; foo</code></pre>
+<h3 id="3.4">编写复杂模块</h3>
+<p>当某个模块的功能比较复杂时，难以将所有代码塞到同一个函数里。因此中间件提供了编写复杂模块的机制，示例如下：</p>
+<pre><code>// 简单的静态文件请求处理模块。
+var static = require(&#39;pegasus&#39;).createPipe({
+    /**
+     * 定义了该函数时，会调用该函数执行初始化工作。
+     * @param config {Object} 配置对象。
+     */
+    _initialize: function (config) {
+        this._root = config.root || &#39;.&#39;;
+    },
+
+    /**
+     * 模块入口函数，用于处理当前HTTP请求。
+     * @param request {Object} 等同于context.request
+     * @param response {Object} 等同于context.response
+     */
+    main: function (request, response) {
+        var context = this.context,
+            next = this.next,
+            // 计算静态文件绝对路径。
+            pathname = path.join(this._root,
+                request.pathname.replace(context.base, &#39;&#39;));
+
+        // 读取文件。
+        fs.readFile(pathname, function (err, data) {
+            if (err) { // 无法读取文件。
+                response
+                    .status(404);
+            } else { // 返回文件。
+                response
+                    .status(200)
+                    .write(data);
+            }
+            next();
+        });
+    },
+
+    /**
+     * 定义了该函数时，会调用该函数判断是否处理当前HTTP请求。
+     * @param request {Object} 等同于context.request
+     * @param response {Object} 等同于context.response
+     * @return {boolean} 返回false时不处理当前请求，返回true时处理。
+     */
+    match: function (request, response) {
+        // 仅处理GET请求。
+        return request.method === &#39;GET&#39;;
+    }
+});</code></pre>
+<p>上例中定义的模块按照以下方式使用：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        static({ root: &#39;/home/admin/htdocs/&#39; })
+    ]);</code></pre>
+<h4 id="3.4.1">发生了什么？！</h4>
+<p>上边编写复杂模块的例子或许有些复杂，接下来逐步说明一下：</p>
+<ol>
+<li><p>调用<code>pegasus.createPipe</code>时传入原型对象，并返回的是一个工厂函数。</p>
+</li>
+<li><p>调用工厂函数时传入<code>config</code>对象创建和初始化模块。例如<code>static</code>函数执行后会新建以下对象：</p>
+<pre><code> {
+     _initialize: [[Function]],
+     main: [[Function]],              &lt;= 原型对象，
+     match: [[Function]]
+ }
+     ^
+     | 原型链
+     |
+ {
+     _root: [[string]]                &lt;= 新建对象
+ }</code></pre>
+<p> 对象创建后，会在新建对象上调用<code>_initialize</code>方法完成初始化工作。例如<code>static</code>模块的初始化函数通过<code>this._root</code>在新建对象上设置属性。</p>
+<p> 模块初始化完毕后，工厂函数会返回自动创建的模块函数，同样接受<code>context</code>和<code>next</code>两个参数。</p>
+</li>
+<li><p>当某个HTTP请求到达流水线并由以上模块函数处理时，模块函数会再新建一个对象。仍以<code>static</code>模块为例，新建对象如下：</p>
+<pre><code> {
+     _initialize: [[Function]],
+     main: [[Function]],              &lt;= 原型对象，
+     match: [[Function]]
+ }
+     ^
+     | 原型链
+     |
+ {
+     _root: [[string]]                &lt;= 原型对象，
+ }
+     ^
+     | 原型链
+     |
+ {
+                                      &lt;= 新建对象。
+ }</code></pre>
+<p> 对象创建后，会在新建对象上调用<code>match</code>方法检查是否需要处理当前HTTP请求，并在需要时调用<code>main</code>函数。</p>
+<p> 模块函数每次执行时新创建一个对象的方式，保证了原型链上的函数在每次处理HTTP请求的过程中可以通过<code>this</code>来设置和交换临时数据，并且不会污染原型对象，实现了不同HTTP请求处理过程的隔离。</p>
+</li>
+</ol>
+
+<h2 id="4">请求与响应</h2>
+<p>有请求就有响应，而请求可以由客户端发起，也可以由服务端发起。由客户端发起时，通过<code>context.request</code>和<code>context.response</code>这两个对象来处理客户端请求和响应。在处理过程中，如果需要由服务端发起额外请求，并根据服务端响应结果来决定如何处理客户端响应时，还可以把<code>context.request</code>当作函数调用，并在回调中获取服务端响应相关数据。</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var request = context.request, // 客户端请求
+                response = context.response; // 客户端响应
+
+            // 发起服务端请求。
+            request(&#39;http://foo.com/&#39;, function (response) { // 服务端响应。
+                next();
+            });
+        });</code></pre>
+<h3 id="4.1">客户端请求</h3>
+<p><code>context.request</code>对象用于读取客户端请求相关数据。</p>
+<h4 id="4.1.1">请求地址（href）</h4>
+<p>一个完整的请求地址可以分解为以下部分：</p>
+<pre><code>                           href
+ -----------------------------------------------------------
+                            host              path
+                      --------------- ----------------------
+ http: // user:pass @ host.com : 8080 /p/a/t/h ?query=string
+ -----    ---------   --------   ---- -------- -------------
+protocol     auth     hostname   port pathname     search</code></pre>
+<p>可以按照以下方式获取到请求地址的各部分：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var request = context.request,
+                response = context.response,
+                output = [
+                    request.href,
+                    request.protocol,
+                    request.hostname,
+                    request.port,
+                    request.path,
+                    request.pathname,
+                    request.search,
+                ];
+
+            response
+                .write(output.join(&#39;\n&#39;));
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/foo/bar?v=1234
+  &gt;&gt; http://localhost/foo/bar?v=1234
+  &gt;&gt; http:
+  &gt;&gt; localhost
+  &gt;&gt; 80
+  &gt;&gt; /foo/bar?v=1234
+  &gt;&gt; /foo/bar
+  &gt;&gt; ?v=1234</code></pre>
+<h4 id="4.1.2">请求方法（method）</h4>
+<p>通过<code>request.method</code>属性可获取到请求方法，示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.response
+                .write(context.request.method);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; GET</code></pre>
+<h4 id="4.1.3">请求头（headers）</h4>
+<p>通过<code>request.head(key)</code>方法可获取到请求头中的某个字段，或整个请求头对象，示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var request = context.request,
+                response = context.response,
+                headers = request.head();
+
+            Object.keys(headers).forEach(function(key) {
+                response.write(key + &#39;: &#39; + headers[key] + &#39;\n&#39;);
+            });
+            response.write(request.head(&#39;user-agent&#39;));
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; user-agent: curl/7.26.0
+  &gt;&gt; host： localhost
+  &gt;&gt; accept: */*
+  &gt;&gt; curl/7.26.0</code></pre>
+<h4 id="4.1.4">请求数据（body）</h4>
+<p>通过<code>request.body(charset)</code>方法可读取请求数据。<code>charset</code>参数等于&quot;binary&quot;时，使用二进制方式读取。忽略该参数时，使用路由器默认编码读取。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.response
+                .write(context.request.body())
+            next();
+        }
+    ]);
+
+---------------
+curl --data hello http://localhost/
+  &gt;&gt; hello</code></pre>
+<h4 id="4.1.5">请求来源（ip）</h4>
+<p>通过<code>request.ip</code>属性可获取请求来源的IP。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.response
+                .write(context.request.ip)
+            next();
+        }
+    ]);
+
+---------------
+curl --data hello http://localhost/
+  &gt;&gt; 127.0.0.1</code></pre>
+<h4 id="4.1.6">cookie</h4>
+<p>当HTTP请求包含cookie时，可通过<code>request.cookie</code>对象读取cookie数据。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var cookie = context.request.cookie;
+
+            context.response
+                .write(cookie ? cookie.foo : &#39;no cookie&#39;);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; no cookie
+curl --cookie &quot;foo=bar&quot; http://localhost/
+  &gt;&gt; bar</code></pre>
+<h4 id="4.1.7">查询字符串（query string）</h4>
+<p>当HTTP请求的URI中包含查询字符串（例如?id=1）时，可通过<code>request.query</code>对象读取查询字符串。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var query = context.request.query;
+
+            context.response
+                .write(query ? query.foo : &#39;no query&#39;);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; no query
+curl http://localhost/?foo=bar
+  &gt;&gt; bar</code></pre>
+<h4 id="4.1.8">表单请求（form post）</h4>
+<p>当HTTP请求是一个表单请求时，可通过<code>request.form</code>对象读取表单数据。对于<code>file</code>类型的表单字段，读取到的是一个<code>file</code>对象，提供了文件名（<code>file.name</code>），文件类型（<code>file.type</code>），文件二进制数据（<code>file.data</code>），文件大小（<code>file.size</code>）四个属性，以及一个保存文件的方法（<code>file.save(pathname)</code>）。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var form = context.request.form;
+
+            if (form) {
+                form.upload.save(&#39;./upload/&#39; + form.upload.name);
+                context.response
+                    .write(
+                        &#39;title: &#39; + form.title + &#39;\n&#39; +
+                        &#39;file name: &#39; + form.upload.name + &#39;\n&#39; +
+                        &#39;file type: &#39; + form.upload.type + &#39;\n&#39; +
+                        &#39;file size: &#39; + form.upload.size + &#39;\n&#39; +
+                        &#39;file saved to: &#39; + &#39;./upload/&#39; + form.upload.name
+                    );
+            }
+            next();
+        }
+    ]);
+
+---------------
+## 使用curl模拟以下表单提交结果。
+# &lt;form action=&quot;/upload&quot; enctype=&quot;multipart/form-data&quot; method=&quot;post&quot;&gt;
+# &lt;input type=&quot;text&quot; name=&quot;title&quot; /&gt;
+# &lt;input type=&quot;file&quot; name=&quot;upload&quot; /&gt;
+# &lt;input type=&quot;submit&quot;&gt;
+# &lt;/form&gt;
+curl --form upload=@hello.txt --form title=sample http://localhost/
+  &gt;&gt; title: sample
+  &gt;&gt; file name: hello.txt
+  &gt;&gt; file type: text/plain
+  &gt;&gt; file size: 13
+  &gt;&gt; file saved to: ./upload/hello.txt</code></pre>
+<h4 id="4.1.9">JSON请求</h4>
+<p>当HTTP请求是一个JSON请求时，可通过<code>request.json</code>对象读取JSON数据。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var json = context.request.json;
+
+            context.response
+                .write(json ? json.name : &#39;not a JSON request&#39;);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; not a JSON request
+curl --data &#39;{&quot;name&quot;: &quot;Jim Green&quot;}&#39; --header &quot;Content-Type: application/json&quot; http://localhost/
+  &gt;&gt; Jim Green</code></pre>
+<h3 id="4.2">客户端响应</h3>
+<p><code>context.response</code>对象用于读取和修改客户端响应数据。</p>
+<h4 id="4.2.1">状态码（status）</h4>
+<p>通过<code>response.status(code)</code>方法可设置HTTP响应状态码。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.response
+                .status(404);
+            next();
+        }
+    ]);
+
+---------------
+curl --head http://localhost/
+  &gt;&gt; HTTP/1.1 404 Not Found
+  &gt;&gt; ...</code></pre>
+<p>客户端响应的默认状态码等于<code>404</code>。</p>
+<h4 id="4.2.2">响应头（headers）</h4>
+<p>通过<code>response.head(key, value)</code>方法可读取或设置响应头。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var response = context.response;
+
+            response
+                .head(&#39;x-example&#39;, &#39;foo&#39;)
+                .head(&#39;x-example&#39;, response.head(&#39;x-example&#39;) + &#39;bar&#39;);
+            next();
+        }
+    ]);
+
+---------------
+curl --head http://localhost/
+  &gt;&gt; ...
+  &gt;&gt; X-Example: foobar
+  &gt;&gt; ...</code></pre>
+<p><code>response.head</code>方法省略参数时返回整个响应头对象，参数是一个对象时使用传入的对象作为响应头。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var response = context.response,
+                headers = response.head();
+
+            headers[&#39;x-exampe&#39;] = &#39;foobar&#39;;
+            response
+                .head(&#39;headers&#39;);
+            next();
+        }
+    ]);
+
+---------------
+curl --head http://localhost/
+  &gt;&gt; ...
+  &gt;&gt; X-Example: foobar
+  &gt;&gt; ...</code></pre>
+<h4 id="4.2.3">cookie</h4>
+<p>通过<code>response.cookie(name, value, options)</code>方法可为HTTP响应设置cookie。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.response
+                .cookie(&#39;foo&#39;, &#39;bar&#39;, {
+                    maxAge: 0,
+                    domain: &#39;localhost&#39;,
+                    path: &#39;/&#39;,
+                    expires: new Date(),
+                    httpOnly: true,
+                    secure: true
+                });
+            next();
+        }
+    ]);
+
+---------------
+curl --head http://localhost/
+  &gt;&gt; ...
+  &gt;&gt; Set-Cookie: foo=bar; Domain=localhost; Path=/; Expires=Tue, 04 Dec 2012 03:03:14 GMT; HttpOnly; Secure
+  &gt;&gt; ...</code></pre>
+<h4 id="4.2.4">响应数据（body）</h4>
+<p>通过<code>response.write(data)</code>方法可追加响应数据。<code>data</code>参数支持字符串与二进制两种类型。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.response
+                .write(&#39;foo&#39;)
+                .write(&#39;bar&#39;);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; foobar</code></pre>
+<p>通过<code>response.body(charset)</code>方法可读取整个响应数据。忽略<code>charset</code>参数时，使用服务器默认编码。<code>charset</code>参数设置为<code>binary</code>时，使用二进制方式读取。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.response
+                .write(&#39;foo&#39;)
+                .write(context.response.body());
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; foofoo</code></pre>
+<p>通过<code>response.clear()</code>方法可清空之前添加的响应数据。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.response
+                .write(&#39;foo&#39;)
+                .clear()
+                .write(&#39;bar&#39;);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; bar</code></pre>
+<h4 id="4.2.5">发送响应</h4>
+<p>通过<code>response.end(data)</code>方法可以立即发送客户端响应。提供了<code>data</code>参数时，先追加响应数据再发送响应。</p>
+<p>一条流水线上的所有模块执行完毕后，流水线会自动调用<code>response.end</code>方法发送响应，因此一般不需要在模块里显式调用该方法。如果在一个模块里调用了该方法，则后续模块里对响应的操作会被忽略。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.response
+                .end(&#39;foo&#39;);
+            next();
+        },
+        function (context, next) {
+            context.response
+                .write(&#39;bar&#39;);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; foo</code></pre>
+<h3 id="4.3">服务端请求</h3>
+<p>在模块中可以使用<code>context.request</code>函数发起一个服务端请求，示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/foo&#39;, [
+        function (context, next) {
+            context.response
+                .write(&#39;foo&#39;);
+            next();
+        }
+    ])
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var href = &#39;http://localhost/foo&#39;;
+
+            context.request(href, function (response) {
+                context.response
+                    .write(response.body());
+                next();
+            });
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; foo</code></pre>
+<p>如果不满足于发起简单的GET请求，而希望有更加详细的控制，可以使用<code>options</code>对象代替<code>href</code>字符串，示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/foo&#39;, [
+        function (context, next) {
+            context.response
+                .write(context.request.head(&#39;x-bar&#39;));
+            next();
+        }
+    ])
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var options = {
+                    href: &#39;http://localhost/foo&#39;, // 请求地址
+                    method: &#39;POST&#39;,               // 请求方法
+                    headers: {                    // 请求头
+                        &#39;x-bar&#39;: &#39;bar&#39;
+                    },
+                    body: &#39;foo&#39;                   // 请求数据
+                };
+
+            context.request(options, function (response) {
+                context.response
+                    .write(response.body());
+                next();
+            });
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; bar</code></pre>
+<p><code>href</code>参数支持使用以下协议。</p>
+<h4 id="4.3.1">http(s):</h4>
+<p>可以是任何标准的HTTP(S) URL，例如：</p>
+<pre><code>http://localhost/foo.js?v=123
+https://www.example.com/bar
+http://10.20.131.161/baz</code></pre>
+<p>另外，可以通过以下方式同时指定IP和域名，用于绕过本地DNS解析。</p>
+<pre><code>http://www.example.com@10.20.131.161/baz</code></pre>
+<h4 id="4.3.2">file:</h4>
+<p>可以是任何标准的File URL，用于读取服务器本地文件，例如：</p>
+<pre><code>file:///C:/htdocs/foo.js              # Windows
+file:///home/admin/htdocs/foo.js      # *nix</code></pre>
+<h4 id="4.3.3">loop:</h4>
+<p>中间件专用协议，由<code>loop://</code>+<code>域名</code>+<code>路径</code>组成，用于绕开域名解析与网络传输层，直接对当前路由器下某条流水线发起高速请求，例如：</p>
+<pre><code>loop://localhost/foo.js</code></pre>
+<p>以下是一个使用<code>loop:</code>协议的例子：</p>
+<pre><code>createServer(80)
+    .mount(&#39;pipeline.a&#39;, [
+        function (context, next) {
+            context.response
+                .write(context.request.pathname);
+            next();
+        }
+    ])
+    .mount(&#39;pipeline.b&#39;, [
+        function (context, next) {
+            context.response
+                .write(context.request.pathname);
+            next();
+        }
+    ])
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.request(&#39;loop://pipeline.a/foo&#39;, function (response) {
+                context.response
+                    .write(response.body());
+                next();
+            });
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; foo</code></pre>
+<h3 id="4.4">服务端响应</h3>
+<p><code>context.request</code>函数的回调函数返回一个<code>response</code>对象，用于读取服务端响应相关数据。</p>
+<h4 id="4.4.1">状态码（status）</h4>
+<p>通过<code>response.status</code>属性可读取响应状态码。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.request(&#39;file:///not/exists&#39;, function (response) {
+                context.response
+                    .write(response.status);
+                next();
+            });
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; 404</code></pre>
+<h4 id="4.4.2">响应头（headers）</h4>
+<p>通过<code>response.head(key)</code>方法可读取响应头，提供<code>key</code>参数时得到某一字段，不提供时得到整个响应头对象。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;pipeline.a&#39;, [
+        function (context, next) {
+            context.response
+                .head(&#39;x-foo&#39;, &#39;foo&#39;)
+                .head(&#39;x-bar&#39;, &#39;bar&#39;);
+            next();
+        }
+    ])
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.request(&#39;loop://pipeline.a/&#39;, function (response) {
+                context.response
+                    .write(response.head(&#39;x-foo&#39;))
+                    .write(response.head()[&#39;x-bar&#39;]);
+                next();
+            });
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; foobar</code></pre>
+<blockquote>
+<p>   通过<code>http(s):</code>与<code>loop:</code>协议得到的响应头内容取决于请求的服务器，而通过<code>file:</code>协议得到的200响应头固定包含<code>content-length</code>、<code>content-type</code>和<code>last-modified</code>三个字段。</p>
+</blockquote>
+<h4 id="4.4.3">响应数据（body）</h4>
+<p>通过<code>response.body(charset)</code>方法可读取响应数据。忽略<code>charset</code>参数时，使用服务器默认编码。<code>charset</code>参数设置为<code>binary</code>时，使用二进制方式读取。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;pipeline.a&#39;, [
+        function (context, next) {
+            context.response
+                .write(&#39;foobar&#39;);
+            next();
+        }
+    ])
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            context.request(&#39;loop://pipeline.a/&#39;, function (response) {
+                context.response
+                    .write(response.body());
+                next();
+            });
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; foobar</code></pre>
+
+<h2 id="5">存储</h2>
+<p>由于HTTP是无状态的，如果需要多个HTTP请求共享一些数据时就需要用到存储。中间件为此提供了三种存储方式。</p>
+<h3 id="5.1">session</h3>
+<p>session对象为每个用户提供独立的数据存储空间。当用户使用某个浏览器第一次请求服务器后，服务器会生成一个唯一的<code>session id</code>并以cookie的方式返回给浏览器。浏览器再次请求服务器时，服务器就能够通过cookie中的<code>session id</code>来识别用户。</p>
+<h4 id="5.1.1">启用session</h4>
+<p>session默认是禁用的。可以按照以下方式为每条流水线单独配置和启用session对象：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, { session: 30 }, [
+        function (context, next) {
+            var session = context.session;
+
+            session.count = (session.count || 0) + 1;
+            context.response
+                .write(session.count);
+            next();
+        }
+    ]);
+
+---------------
+# 模拟某用户发起的第一次请求。
+curl -i http://localhost/
+  &gt;&gt; ...
+  &gt;&gt; Set-Cookie: __pegasus_sid=b9dddf32ab28a93e37d200d98f1f3ec3; HttpOnly
+  &gt;&gt; ...
+  &gt;&gt; 1
+# 模拟某用户发起的第二次请求。
+curl --cookie &quot;__pegasus_sid=b9dddf32ab28a93e37d200d98f1f3ec3&quot; http://localhost/
+  &gt;&gt; 2</code></pre>
+<h4 id="5.1.2">session有效期</h4>
+<p>用户使用某个浏览器第一次请求服务器后，服务器为其生成一个session对象。浏览器在有效期内再次请求服务器时，复用之前的session对象，并且重新计算有效期。超过有效期时，之前的session对象被废弃，服务器重新生成一个session对象。有效期的单位是秒，设置为零或未设置时禁用session。例如，以下配置为某条流水线设置了30分钟的session：</p>
+<pre><code>.mount(&#39;/&#39;, { session: 1800 }, [ ...</code></pre>
+<h3 id="5.2">application</h3>
+<p>application对象为每条流水线提供全局数据存储空间，在每条流水线处理的所有HTTP请求之间共享。储存在application对象中的数据会一直保存到服务器关闭为止。示例如下：</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var application = context.application;
+
+            application.count = (application.count || 0) + 1;
+            context.response
+                .write(application.count);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; 1
+curl http://localhost/
+  &gt;&gt; 2</code></pre>
+<h3 id="5.3">storage</h3>
+<p>storage函数提供了类似关系数据库的持久存储能力，以JSON格式将数据保存在磁盘文件中。在JSON文件中，数据按照一个键（key）下按插入顺序存储多个值（value）的方式扁平存放,示例如下。</p>
+<pre><code>{
+    &quot;message&quot;: [ &quot;Hello&quot;, &quot;World&quot; ]
+}</code></pre>
+<h4 id="5.3.1">打开数据库</h4>
+<p>按照以下方式打开一个已有数据库，或新建一个空数据库。</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var db = context.storage(&#39;./storage/db.json&#39;);
+
+            context.response
+                .write(&#39;DB opended.&#39;);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; DB opended.</code></pre>
+<h4 id="5.3.2">插入数据（insert）</h4>
+<p>按照以下方式在一个键下插入一个值，插入的值使用JSON.stringify序列化为字符串后保存。</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var db = context.storage(&#39;./storage/db.json&#39;);
+
+            db.insert(&#39;people&#39;, { name: &#39;Jim&#39;, age: 27 });
+            db.insert(&#39;people&#39;, { name: &#39;Tom&#39;, age: 26 });
+            context.response
+                .write(&#39;2 records inserted.&#39;);
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; 2 records inserted.</code></pre>
+<h4 id="5.3.3">读取数据（select）</h4>
+<p>按照以下方式读取某个键下的数据，未指定筛选条件时读取某个键下的所有数据。接着上例。</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var db = context.storage(&#39;./storage/db.json&#39;);
+
+            db.select(&#39;people&#39;).forEach(function (value) {
+                context.response
+                    .write(value.name + &#39;:&#39; + value.age + &#39;\n&#39;);
+            });
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; Jim:27
+  &gt;&gt; Tom:26</code></pre>
+<h4 id="5.3.4">筛选条件（filter）</h4>
+<p>筛选条件是一个JS代码片段，用于判断是否对某个值使用某操作。代码片段中，<code>$</code>表示值本身，<code>#</code>表示值在数组中的索引（<code>#</code>在代码片段中当作变量名使用）。代码片段运行后，返回真值（true、1等）时应用某操作，返回假值时（false、null等）跳过某操作。接着上例。</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var db = context.storage(&#39;./storage/db.json&#39;);
+
+            db.select(&#39;people&#39;, &#39;$.age==27&#39;).forEach(function (value) {
+                context.response
+                    .write(value.name + &#39;:&#39; + value.age + &#39;\n&#39;);
+            });
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; Jim:27</code></pre>
+<h4 id="5.3.5">更新数据（update）</h4>
+<p>按照以下方式更新某个键下的数据，未指定筛选条件时更新某个键下的所有数据。接着上例。</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var db = context.storage(&#39;./storage/db.json&#39;);
+
+            db.update(&#39;people&#39;, { name: &#39;Kim&#39;, age: 27 }, &#39;$.age==27&#39;);
+            db.select(&#39;people&#39;).forEach(function (value) {
+                context.response
+                    .write(value.name + &#39;:&#39; + value.age + &#39;\n&#39;);
+            });
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; Kim:27
+  &gt;&gt; Tom:26</code></pre>
+<h4 id="5.3.6">删除数据（remove）</h4>
+<p>按照以下方式删除某个键下的数据，未指定筛选条件时删除某个键下的所有数据。接着上例。</p>
+<pre><code>createServer(80)
+    .mount(&#39;/&#39;, [
+        function (context, next) {
+            var db = context.storage(&#39;./storage/db.json&#39;);
+
+            db.remove(&#39;people&#39;, &#39;#==0&#39;);
+            db.select(&#39;people&#39;).forEach(function (value) {
+                context.response
+                    .write(value.name + &#39;:&#39; + value.age + &#39;\n&#39;);
+            });
+            next();
+        }
+    ]);
+
+---------------
+curl http://localhost/
+  &gt;&gt; Tom:26</code></pre>
+
+<h2 id="6">工具集</h2>
+<p>中间件提供了一些工具函数，除了用于编写中间件自身代码外，还可用于编写模块。可以通过以下方式访问工具函数。</p>
+<pre><code>var pegasus = require(&#39;pegasus&#39;),
+    util = pegasus.util;</code></pre>
+<h3 id="6.1">util.throwError</h3>
+<p>用于抛出一个自定义错误。</p>
+<pre><code>try {
+    util.throwError(&#39;hello %s&#39;, &#39;world&#39;);
+} catch (err) {
+    try {
+        util.throwError(new Error(err.message));
+    } catch (err) {
+        console.log(err.message); // =&gt; hello world
+    }
+}</code></pre>
+<blockquote>
+<p>   注意： 做异常捕获时可以通过<code>util.isCheckedError</code>来判断捕获的是否是自定义错误。</p>
+</blockquote>
+<h3 id="6.2">util.format</h3>
+<p>返回格式化之后的字符串。</p>
+<pre><code>util.format(&#39;hello %s&#39;, &#39;world&#39;); // =&gt; &quot;hello world&quot;</code></pre>
+<h3 id="6.3">util.log</h3>
+<p>在标准输出流（stdout）中打印一条日志，并附上时间戳。</p>
+<pre><code>util.log(&#39;hello %s&#39;, &#39;world&#39;);  // =&gt; [10:34:06] hello world</code></pre>
+<h3 id="6.4">util.error</h3>
+<p>在标准错误流（stderr）中打印一条日志，并附上时间戳。</p>
+<pre><code>util.error(&#39;hello %s&#39;, &#39;world&#39;);  // =&gt; [10:34:06] hello world</code></pre>
+<h3 id="6.5">util.isArray</h3>
+<p>用于判断某个变量是否是数组类型。</p>
+<pre><code>util.isArray([]); // =&gt; true
+util.isArray({}); // =&gt; false</code></pre>
+<h3 id="6.6">util.isBoolean</h3>
+<p>用于判断某个变量是否是原始布尔类型。</p>
+<pre><code>util.isBoolean(false); // =&gt; true
+util.isBoolean(new Boolean(false)); // =&gt; false</code></pre>
+<h3 id="6.7">util.isCheckedError</h3>
+<p>用于判断某个变量是否是自定义错误类型。</p>
+<pre><code>try {
+    util.throwError(&#39;custom error&#39;);
+} catch (err) {
+    util.isCheckedError(err); // =&gt; true
+    util.isCheckedError(new Error(&#39;native error&#39;)); // =&gt; false
+}</code></pre>
+<h3 id="6.8">util.isDate</h3>
+<p>用于判断某个变量是否是日期类型。</p>
+<pre><code>util.isDate(new Date()); // =&gt; true
+util.isDate(2013); // =&gt; false</code></pre>
+<h3 id="6.9">util.isError</h3>
+<p>用于判断某个变量是否是错误类型。</p>
+<pre><code>try {
+    util.throwError(&#39;custom error&#39;);
+} catch (err) {
+    util.isError(err); // =&gt; true，自定义错误继承于原生错误
+    util.isError(new Error(&#39;native error&#39;)); // =&gt; true
+    util.isError({}); // =&gt; flase
+}</code></pre>
+<h3 id="6.10">util.isFunction</h3>
+<p>用于判断某个变量是否是函数类型。</p>
+<pre><code>util.isFunction(function() {}); // =&gt; true
+util.isFunction({}); // =&gt; false</code></pre>
+<h3 id="6.11">util.isNull</h3>
+<p>用于判断某个变量是否是空值。</p>
+<pre><code>util.isNull(null); // =&gt; true
+util.isNull(undefined); // =&gt; false</code></pre>
+<h3 id="6.12">util.isNumber</h3>
+<p>用于判断某个变量是否是原始数字类型。</p>
+<pre><code>util.isNumber(1); // =&gt; true
+util.isNumber(new Number(1)); // =&gt; false</code></pre>
+<h3 id="6.13">util.isObject</h3>
+<p>用于判断某个变量是否是对象类型。</p>
+<pre><code>util.isObject({}); // =&gt; true
+util.isObject([]); // =&gt; true
+util.isObject(function() {}); // =&gt; true
+util.isObject(1); // =&gt; false</code></pre>
+<blockquote>
+<p>   注意：除了原始数据类型（number、string等等）以外的一切类型都是对象类型。如果仅需要判断给定变量是否是一个普通对象，请使用<code>util.type</code>函数。</p>
+</blockquote>
+<h3 id="6.14">util.isRegExp</h3>
+<p>用于判断某个变量是否是正则表达式类型。</p>
+<pre><code>util.isRegExp(/\w/); // =&gt; true
+util.isRegExp(&#39;\\w&#39;); // =&gt; false</code></pre>
+<h3 id="6.15">util.isString</h3>
+<p>用于判断某个变量是否是原始字符串类型。</p>
+<pre><code>util.isString(&#39;hello&#39;); // =&gt; true
+util.isString(new String(&#39;hello&#39;)); // =&gt; false</code></pre>
+<h3 id="6.16">util.isUndefined</h3>
+<p>用于判断某个变量是否未定义。</p>
+<pre><code>util.isUndefined(undefined); // =&gt; true
+util.isUndefined(null); // =&gt; false</code></pre>
+<h3 id="6.17">util.type</h3>
+<p>用于返回某个变量的类型。</p>
+<pre><code>util.type(undefined);         // =&gt; &quot;undefined&quot;
+util.type(1);                 // =&gt; &quot;number&quot;
+util.type(false);             // =&gt; &quot;boolean&quot;
+util.type(&#39;hello&#39;);           // =&gt; &quot;string&quot;
+util.type(function() {});     // =&gt; &quot;function&quot;
+util.type(/\w/);              // =&gt; &quot;regexp&quot;
+util.type([]);                // =&gt; &quot;array&quot;
+util.type(new Date());        // =&gt; &quot;date&quot;
+util.type(new Error());       // =&gt; &quot;error&quot;
+util.type({});                // =&gt; &quot;object&quot;
+util.type(null);              // =&gt; &quot;null&quot;</code></pre>
+<h3 id="6.18">util.inherit</h3>
+<p>创建一个子类构造函数。</p>
+<pre><code>var Human = util.inherit(Object, {
+        _initialize: function (config) { // 可选初始化函数。
+            this._name = config.name;
+        },
+        greet: function () {
+            console.log(&#39;Hello, my name is %s&#39;, this._name);
+        }
+    }),
+    Student = util.inherit(Human, {
+        _initialize: function (config) {  // 可选初始化函数。
+            Student.superclass._initialize.apply(this, arguments);
+            this._number = config.number;
+        },
+        greet: function () {
+            Student.superclass.greet.apply(this);
+            console.log(&#39;My number is %s&#39;, this._number);
+        }
+    });
+
+new Student({ name: &#39;Jim Green&#39;, number: 1 })
+    .greet();  // =&gt; Hello, my name is Jim Green
+               // =&gt; My number is 1</code></pre>
+<p>通过该方法创建的构造函数也可以按以下方式创建一个子类构建函数。</p>
+<pre><code>var Student = Human.extend({
+        _initialize: function (config) { ... },
+        greet: function () { ... }
+    });</code></pre>
+<h3 id="6.19">util.mix</h3>
+<p>从第二个参数开始，按从左到右的顺序依次把所有可枚举属性浅度合并到第一个参数上，并返回第一个参数。</p>
+<pre><code>console.log(util.mix(
+    { foo: 1 }, { foo: 2 }, { bar: 3 }));  // =&gt; { foo: 2, bar: 3 }</code></pre>
+<p>也可以通过最后一个可选布尔参数决定是否覆盖已有属性。</p>
+<pre><code>console.log(util.mix(
+    { foo: 1 }, { foo: 2 }, { bar: 3 }, false));  // =&gt; { foo: 1, bar: 3 }</code></pre>
+<p>参数中如果有空值，会被忽略掉。</p>
+<pre><code>console.log(util.mix(
+    { foo: 1 }, null, { bar: 3 }));  // =&gt; { foo: 1, bar: 3 }</code></pre>
+<h3 id="6.20">util.merge</h3>
+<p>等价于<code>util.mix({}, obj1, obj2...)</code>。</p>
+<pre><code>console.log(util.merge(
+    { foo: 1 }, { foo: 2 })); // =&gt; { foo: 2 }
+console.log(util.merge(
+    { foo: 1 }, { foo: 2 }, false)); // =&gt; { foo: 1 }
+console.log(util.merge(
+    null, { foo: 2 })); // =&gt; { foo: 2 }</code></pre>
+<h3 id="6.21">util.each</h3>
+<p>类似于数组的<code>forEach</code>方法，只不过遍历的是对象的可枚举键值对。</p>
+<pre><code>util.each({ foo: 1, bar: 2 }, function (value, key) {
+    this.log(&#39;%s:%s&#39;, key, value);
+}, console);
+
+---------------
+foo:1
+bar:2</code></pre>
+<h3 id="6.22">util.keys</h3>
+<p>获取对象所有可枚举键的集合。</p>
+<pre><code>util.keys({ foo: 1, bar: 2 });  // =&gt; [ &#39;foo&#39;, &#39;bar&#39; ]</code></pre>
+<h3 id="6.23">util.values</h3>
+<p>获取对象所有可枚举值的集合。</p>
+<pre><code>util.values({ foo: 1, bar: 2 });  // =&gt; [ 1, 2 ]</code></pre>
+<h3 id="6.24">util.append</h3>
+<p>在对象中使用同一个键保存多个值。</p>
+<pre><code>var obj = { foo: 1 };
+
+util.append(obj, &#39;foo&#39;, 2 );
+util.append(obj, &#39;bar&#39;, 3 );
+console.log(obj);  // =&gt; { foo: [ 1, 2 ], bar: 3 }</code></pre>
+<h3 id="6.25">util.toArray</h3>
+<p>主要用于将<code>arguments</code>对象转换为数组。</p>
+<pre><code>(function () {
+    util.isArray(arguments);  // =&gt; false
+    util.isArray(util.toArray(arguments));  // =&gt; true
+}());</code></pre>
+<h3 id="6.26">util.unique</h3>
+<p>依次将输入数组中元素不重复地插入一个新数组并返回。</p>
+<pre><code>util.unique([ 1, 2, 2, 3 ]); // =&gt; [ 1, 2, 3 ]</code></pre>
+<h3 id="6.27">util.wildcard</h3>
+<p>使用通配符表达式匹配输入字符串，<code>*</code>匹配任意多个字符，<code>?</code>匹配任意单个字符。</p>
+<pre><code>util.wildcard(&#39;f*&#39;, &#39;foo&#39;);  // =&gt; true
+util.wildcard(&#39;ba?&#39;, &#39;baz&#39;); // =&gt; true</code></pre>
+<h3 id="6.28">util.tmpl</h3>
+<p>渲染类似ASP语法的模板，直接使用JS作为模板语言。详细模板语法请参考<a href="http://ejohn.org/blog/javascript-micro-templating/">JavaScript Micro-Templating</a>。</p>
+<p>可以先定义一个渲染函数后，多次渲染不同数据。</p>
+<pre><code>var render = util.tmpl(
+        &#39;&lt;ul&gt;&#39; +
+        &#39;&lt;% list.forEach(function (value) { %&gt;&#39; +
+        &#39;&lt;li&gt;&lt;%= value %&gt;&lt;/li&gt;&#39; +
+        &#39;&lt;% }); %&gt;&#39; +
+        &#39;&lt;/ul&gt;&#39;
+    );
+
+render({ list: [ &#39;foo&#39; ] });  // =&gt; &lt;ul&gt;&lt;li&gt;foo&lt;/li&gt;&lt;/ul&gt;
+render({ list: [ &#39;bar&#39; ] });  // =&gt; &lt;ul&gt;&lt;li&gt;bar&lt;/li&gt;&lt;/ul&gt;</code></pre>
+<p>也可以同时传入模板和数据进行渲染。</p>
+<pre><code>util.tmpl(&#39;&lt;li&gt;&lt;%= data %&gt;&lt;/li&gt;&#39;, { data: &#39;foo&#39; }); // =&gt; &lt;li&gt;foo&lt;/li&gt;</code></pre>
+<h3 id="6.29">util.encode</h3>
+<p>使用指定编码将字符串转换为二进制数据。支持的编码请参考<a href="https://github.com/ashtuchkin/iconv-lite">iconv-lite</a>。</p>
+<pre><code>util.encode(&#39;中文&#39;, &#39;gbk&#39;); // =&gt; &lt;Buffer d6 d0 ce c4&gt;</code></pre>
+<h3 id="6.30">util.decode</h3>
+<p>使用指定编码将二进制数据转换为字符串。支持的编码请参考<a href="https://github.com/ashtuchkin/iconv-lite">iconv-lite</a>。</p>
+<pre><code>util.decode(new Buffer([ 0xd6, 0xd0, 0xce, 0xc4 ]), &#39;gbk&#39;); // =&gt; &quot;中文&quot;</code></pre>
+<h3 id="6.31">util.mime</h3>
+<p>查找扩展名对应的MIME类型。</p>
+<pre><code>util.mime(&#39;.css&#39;);  // =&gt; text/css
+util.mime(&#39;foo/bar.js&#39;);  // =&gt; application/javascript</code></pre>
+<h3 id="6.32">util.request</h3>
+<p>发起一个请求，并在回调中读取响应数据。支持<code>http(s):</code>与<code>file:</code>两种协议。</p>
+<pre><code>util.request(&#39;http://www.google.com&#39;, function (response) {
+    console.log(response.statusCode);  // =&gt; 302
+    console.log(response.headers);  // =&gt; { location: &#39;http://...
+    console.log(response.body);  // =&gt; &lt;Buffer 3c 48 54 4d ...
+});</code></pre>
+<blockquote>
+<p>   注意： 这里的response对象和<code>context.request</code>方法对应的response对象是不同的。</p>
+</blockquote>
+
+</article>
+<footer>
+
+</footer>
+</body>
+</html>
